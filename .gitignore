@@ -1,0 +1,19 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual Environments
+venv/
+.venv/
+env/
+ENV/
+
+# IDEs
+.idea/
+.vscode/
+
+# Local/temp files used during docker volume mounts
+tmp/
+temp/
+*.log

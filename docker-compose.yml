@@ -1,0 +1,77 @@
+services:
+  # ── Flask API Server ─────────────────────────────────────────────────────────
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: compiler-backend
+    container_name: compiler-backend
+    ports:
+      - "5000:5000"
+    # Mount the host Docker socket so the API can spawn sibling containers
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /tmp:/tmp   # shared temp dir for code volume mounts
+    restart: unless-stopped
+    environment:
+      - PORT=5000
+
+  # ── Runner Images (built here, used by the API at runtime) ───────────────────
+  # These are never started as long-running services; they're just built
+  # so the images are available locally for `docker run` calls.
+
+  runner-python:
+    build:
+      context: ./runners
+      dockerfile: Dockerfile.python
+    image: compiler-python
+    profiles: ["build-only"]   # won't start with `docker compose up`
+
+  runner-node:
+    build:
+      context: ./runners
+      dockerfile: Dockerfile.node
+    image: compiler-node
+    profiles: ["build-only"]
+
+  runner-java:
+    build:
+      context: ./runners
+      dockerfile: Dockerfile.java
+    image: compiler-java
+    profiles: ["build-only"]
+
+  runner-c:
+    build:
+      context: ./runners
+      dockerfile: Dockerfile.gcc
+    image: compiler-c
+    profiles: ["build-only"]
+
+  runner-cpp:
+    build:
+      context: ./runners
+      dockerfile: Dockerfile.gcc
+    image: compiler-cpp
+    profiles: ["build-only"]
+
+  runner-rust:
+    build:
+      context: ./runners
+      dockerfile: Dockerfile.rust
+    image: compiler-rust
+    profiles: ["build-only"]
+
+  runner-ruby:
+    build:
+      context: ./runners
+      dockerfile: Dockerfile.ruby
+    image: compiler-ruby
+    profiles: ["build-only"]
+
+  runner-julia:
+    build:
+      context: ./runners
+      dockerfile: Dockerfile.julia
+    image: compiler-julia
+    profiles: ["build-only"]
