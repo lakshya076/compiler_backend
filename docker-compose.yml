@@ -7,7 +7,9 @@ services:
     image: compiler-backend
     container_name: compiler-backend
     ports:
-      - "5000:5000"
+      # localhost only: Docker-published ports bypass ufw. Use "5000:5000" to expose on your LAN.
+      - "127.0.0.1:5000:5000"
+    mem_limit: 512m
     # Mount the host Docker socket so the API can spawn sibling containers
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock

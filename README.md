@@ -117,7 +117,17 @@ Each run gets:
 - `--cpus 0.5` — capped CPU
 - `--pids-limit 64` — prevents fork bombs
 - Source mounted as **read-only** (`-v /tmp/...:/code:ro`)
+- Runs as `nobody` (`--user 65534:65534`) with `--cap-drop ALL` and `no-new-privileges`
+- `--read-only` root filesystem; the only writable place is a 64 MB `/tmp` tmpfs (used for compiler output)
 - 15-second timeout; container is force-killed if exceeded
+- Output capped at 64 KB per stream; container is killed once exceeded
+
+The API itself:
+
+- Accepts request bodies up to 64 KB
+- Runs at most 4 containers at once; further requests wait up to 10 s, then get `503`
+- Listens on `127.0.0.1:5000` only (Docker-published ports bypass `ufw`). Change the `ports` entry in `docker-compose.yml` to `"5000:5000"` to reach it from your LAN.
+- Has no authentication or per-client rate limit. If you expose it publicly, add one in front (for example a Cloudflare rate-limiting rule).
 
 ---
 
@@ -130,6 +140,8 @@ python server.py
 ```
 
 > Docker must still be installed on the machine for code execution to work.
+
+Run the tests with `python -m unittest -v test_server`.
 
 ---
 
