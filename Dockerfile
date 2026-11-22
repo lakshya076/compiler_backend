@@ -25,4 +25,5 @@ COPY server.py .
 
 EXPOSE 5000
 
-CMD ["python", "server.py"]
+# One worker so the run-slot semaphore in server.py is global; threads serve concurrent requests.
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "1", "--threads", "8", "--timeout", "60", "--access-logfile", "-", "server:app"]
